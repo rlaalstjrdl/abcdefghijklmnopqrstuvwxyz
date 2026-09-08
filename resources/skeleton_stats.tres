@@ -1,10 +1,13 @@
-[gd_resource type="Resource" script_class="CharacterStats" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CharacterStats" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://resources/character_stats.gd" id="1_stats"]
+[ext_resource type="Texture2D" path="res://assets/ch1/Characters(100x100 split)/Skeleton/Skeleton/Skeleton_Idle.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_stats")
-character_name = "Skeleton"
+character_id = "skeleton"
+character_name = "스켈레톤 (Skeleton)"
+price = 0
 max_hp = 120.0
 move_speed = 190.0
 attack_power = 30.0
@@ -12,3 +15,4 @@ attack_cooldown = 0.75
 attack_range = 320.0
 pickup_range = 100.0
 defense = 2.0
+icon_texture = ExtResource("2_icon")

@@ -1,29 +1,34 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/chapters/chapter_1.gd" id="1_chap_script"]
 [ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player_scene"]
-[ext_resource type="PackedScene" path="res://scenes/entities/enemy.tscn" id="3_enemy_scene"]
-[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="4_settings_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/slime_enemy.tscn" id="3_slime_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/lancer_enemy.tscn" id="4_lancer_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/necromancer_boss.tscn" id="5_necro_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="6_settings_scene"]
 
 [node name="Chapter1" type="Node2D"]
 script = ExtResource("1_chap_script")
-enemy_scene = ExtResource("3_enemy_scene")
+slime_scene = ExtResource("3_slime_scene")
+lancer_scene = ExtResource("4_lancer_scene")
+necromancer_scene = ExtResource("5_necro_scene")
 
 [node name="ColorRectBackground" type="ColorRect" parent="."]
-offset_left = -3000.0
-offset_top = -3000.0
-offset_right = 3000.0
-offset_bottom = 3000.0
-color = Color(0.12, 0.14, 0.18, 1)
+offset_left = -4000.0
+offset_top = -4000.0
+offset_right = 4000.0
+offset_bottom = 4000.0
+color = Color(0.1, 0.12, 0.15, 1)
 
 [node name="Player" parent="." instance=ExtResource("2_player_scene")]
 position = Vector2(640, 360)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(1.2, 1.2)
 position_smoothing_enabled = true
 
-[node name="SpawnTimer" type="Timer" parent="."]
-wait_time = 1.2
+[node name="SlimeSpawnTimer" type="Timer" parent="."]
+wait_time = 1.3
 autostart = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -49,13 +54,23 @@ theme_override_constants/margin_right = 20
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/TopMargin"]
 layout_mode = 2
+theme_override_constants/separation = 16
 
-[node name="HPProgressBar" type="ProgressBar" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+[node name="HPContainer" type="VBoxContainer" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+layout_mode = 2
+
+[node name="HPProgressBar" type="ProgressBar" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/HPContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(250, 24)
+custom_minimum_size = Vector2(250, 22)
 layout_mode = 2
 value = 100.0
 show_percentage = false
+
+[node name="HPLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/HPContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "HP: 100 / 100"
 
 [node name="Spacer" type="Control" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
 layout_mode = 2
@@ -73,16 +88,33 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="SettingsBtn" type="Button" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
-custom_minimum_size = Vector2(100, 32)
+custom_minimum_size = Vector2(100, 36)
 layout_mode = 2
 text = "⚙ 설정"
 
 [node name="LobbyBtn" type="Button" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
-custom_minimum_size = Vector2(100, 32)
+custom_minimum_size = Vector2(100, 36)
 layout_mode = 2
 text = "🏠 로비"
 
-[node name="SettingsMenu" parent="CanvasLayer" instance=ExtResource("4_settings_scene")]
+[node name="AnnouncementLabel" type="Label" parent="CanvasLayer/HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -120.0
+offset_right = 300.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+
+[node name="SettingsMenu" parent="CanvasLayer" instance=ExtResource("6_settings_scene")]
 unique_name_in_owner = true
 visible = false
 

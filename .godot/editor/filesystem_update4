@@ -1,0 +1,6 @@
+res://resources/character_stats.gd
+res://resources/skeleton_stats.tres
+res://scenes/chapters/chapter_1.gd
+res://scenes/entities/player.gd
+res://scenes/ui/main_menu.gd
+res://scripts/globals/settings_manager.gd

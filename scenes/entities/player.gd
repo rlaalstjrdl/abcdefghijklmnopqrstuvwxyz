@@ -8,31 +8,75 @@ var current_hp: float = 100.0
 var attack_timer: float = 0.0
 var is_dead: bool = false
 var is_attacking: bool = false
+var pending_attack_dir: Vector2 = Vector2.RIGHT
+var has_spawned_projectile_in_attack: bool = false
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var detection_area: Area2D = $DetectionArea
-@onready var detection_shape: CollisionShape2D = $DetectionArea/CollisionShape2D
 
 signal hp_changed(new_hp, max_hp)
 signal player_died
 
 func _ready() -> void:
-	if not stats:
-		stats = preload("res://resources/skeleton_stats.tres")
-	
+	# Load selected commando stats
+	stats = SettingsManager.get_selected_stats()
 	current_hp = stats.max_hp
 	hp_changed.emit(current_hp, stats.max_hp)
 	
-	if detection_shape and detection_shape.shape is CircleShape2D:
-		detection_shape.shape.radius = stats.attack_range
+	# Increase size
+	scale = Vector2(2.2, 2.2)
+	
+	_setup_character_animations(stats.character_id)
+	
+	if not animated_sprite.frame_changed.is_connected(_on_sprite_frame_changed):
+		animated_sprite.frame_changed.connect(_on_sprite_frame_changed)
 	
 	animated_sprite.play("idle")
+
+func _setup_character_animations(char_id: String) -> void:
+	var base_folder = "Skeleton"
+	if char_id == "soldier":
+		base_folder = "Soldier"
+	elif char_id == "knight":
+		base_folder = "Knight"
+	
+	var idle_path = "res://assets/ch1/Characters(100x100 split)/%s/%s/%s_Idle.png" % [base_folder, base_folder, base_folder]
+	var walk_path = "res://assets/ch1/Characters(100x100 split)/%s/%s/%s_Walk.png" % [base_folder, base_folder, base_folder]
+	var attack_path = "res://assets/ch1/Characters(100x100 split)/%s/%s/%s_Attack01.png" % [base_folder, base_folder, base_folder]
+	var hurt_path = "res://assets/ch1/Characters(100x100 split)/%s/%s/%s_Hurt.png" % [base_folder, base_folder, base_folder]
+	var death_path = "res://assets/ch1/Characters(100x100 split)/%s/%s/%s_Death.png" % [base_folder, base_folder, base_folder]
+	
+	var frames = SpriteFrames.new()
+	_add_anim_frames(frames, "idle", idle_path, 6, 8.0, true)
+	_add_anim_frames(frames, "walk", walk_path, 8, 10.0, true)
+	_add_anim_frames(frames, "attack", attack_path, 6, 12.0, false)
+	_add_anim_frames(frames, "hurt", hurt_path, 4, 8.0, false)
+	_add_anim_frames(frames, "death", death_path, 4, 6.0, false)
+	
+	animated_sprite.sprite_frames = frames
+
+func _add_anim_frames(sf: SpriteFrames, anim_name: String, path: String, frame_count: int, fps: float, loop: bool) -> void:
+	if not ResourceLoader.exists(path):
+		return
+	var tex = load(path) as Texture2D
+	if not tex:
+		return
+	
+	if not sf.has_animation(anim_name):
+		sf.add_animation(anim_name)
+	sf.set_animation_speed(anim_name, fps)
+	sf.set_animation_loop(anim_name, loop)
+	
+	for i in range(frame_count):
+		var atlas = AtlasTexture.new()
+		atlas.atlas = tex
+		atlas.region = Rect2(i * 100, 0, 100, 100)
+		sf.add_frame(anim_name, atlas)
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 	
-	# Handle movement
+	# Movement
 	var move_vec = SettingsManager.get_movement_vector()
 	velocity = move_vec * stats.move_speed
 	move_and_slide()
@@ -40,9 +84,9 @@ func _physics_process(delta: float) -> void:
 	# Update animation and facing
 	_update_animation(move_vec)
 	
-	# Handle attack cooldown
+	# Attack cooldown
 	attack_timer -= delta
-	if attack_timer <= 0.0:
+	if attack_timer <= 0.0 and not is_attacking:
 		if SettingsManager.auto_attack:
 			_check_auto_attack()
 		else:
@@ -68,7 +112,7 @@ func _check_auto_attack() -> void:
 	var closest_enemy = _find_closest_enemy()
 	if closest_enemy:
 		var dir = (closest_enemy.global_position - global_position).normalized()
-		_perform_attack(dir)
+		_start_attack(dir)
 
 func _check_manual_attack() -> void:
 	if Input.is_action_just_pressed("attack_manual") or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -76,43 +120,55 @@ func _check_manual_attack() -> void:
 		var dir = (mouse_pos - global_position).normalized()
 		if dir == Vector2.ZERO:
 			dir = Vector2.RIGHT if not animated_sprite.flip_h else Vector2.LEFT
-		_perform_attack(dir)
+		_start_attack(dir)
 
 func _find_closest_enemy() -> Node2D:
-	var overlapping_bodies = detection_area.get_overlapping_bodies()
+	var enemies = get_tree().get_nodes_in_group("enemies")
 	var closest: Node2D = null
 	var min_dist: float = stats.attack_range
 	
-	for body in overlapping_bodies:
-		if body.is_in_group("enemies") and not body.get("is_dead"):
-			var dist = global_position.distance_to(body.global_position)
-			if dist < min_dist:
+	for enemy in enemies:
+		if is_instance_valid(enemy) and not enemy.get("is_dead"):
+			var dist = global_position.distance_to(enemy.global_position)
+			if dist <= min_dist:
 				min_dist = dist
-				closest = body
+				closest = enemy
 	
 	return closest
 
-func _perform_attack(direction: Vector2) -> void:
+func _start_attack(direction: Vector2) -> void:
 	attack_timer = stats.attack_cooldown
 	is_attacking = true
+	pending_attack_dir = direction
+	has_spawned_projectile_in_attack = false
 	
 	if direction.x > 0:
 		animated_sprite.flip_h = false
 	elif direction.x < 0:
 		animated_sprite.flip_h = true
 	
+	animated_sprite.stop()
 	animated_sprite.play("attack")
-	
-	# Spawn projectile
+
+func _on_sprite_frame_changed() -> void:
+	if is_attacking and animated_sprite.animation == "attack":
+		# Attack motion strikes at frame 2
+		if animated_sprite.frame >= 2 and not has_spawned_projectile_in_attack:
+			_spawn_projectile()
+
+func _spawn_projectile() -> void:
+	has_spawned_projectile_in_attack = true
 	if projectile_scene:
 		var proj = projectile_scene.instantiate()
 		proj.global_position = global_position
 		proj.damage = stats.attack_power
-		proj.set_target_direction(direction)
+		proj.set_target_direction(pending_attack_dir)
 		get_parent().add_child(proj)
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "attack":
+		if not has_spawned_projectile_in_attack:
+			_spawn_projectile()
 		is_attacking = false
 		animated_sprite.play("idle")
 	elif animated_sprite.animation == "hurt":

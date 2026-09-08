@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CharacterStats" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/character_stats.gd" id="1_stats"]
+[ext_resource type="Texture2D" path="res://assets/ch1/Characters(100x100 split)/Knight/Knight/Knight_Idle.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_stats")
+character_id = "knight"
+character_name = "기사 (Knight)"
+price = 25000000
+max_hp = 500.0
+move_speed = 220.0
+attack_power = 120.0
+attack_cooldown = 0.45
+attack_range = 400.0
+pickup_range = 150.0
+defense = 18.0
+icon_texture = ExtResource("2_icon")

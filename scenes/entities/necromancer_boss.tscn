@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/entities/necromancer_boss.gd" id="1_necro_script"]
+[ext_resource type="Texture2D" path="res://assets/ch1/Characters(100x100 split)/Necromancer/Necromancer/Necromancer_Idle.png" id="2_necro_tex"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 14.0
+height = 36.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hit"]
+radius = 16.0
+height = 40.0
+
+[node name="NecromancerBoss" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_necro_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_necro_tex")
+hframes = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(0, 4)
+shape = SubResource("CapsuleShape2D_hit")
+
+[node name="HPBar" type="ProgressBar" parent="."]
+offset_left = -26.0
+offset_top = -32.0
+offset_right = 26.0
+offset_bottom = -25.0
+max_value = 1000.0
+value = 1000.0
+show_percentage = false
+
+[connection signal="body_entered" from="HitBox" to="." method="_on_hit_box_body_entered"]
