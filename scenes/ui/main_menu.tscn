@@ -1,0 +1,113 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/main_menu.gd" id="1_menu_script"]
+[ext_resource type="Resource" path="res://resources/skeleton_stats.tres" id="2_stats"]
+[ext_resource type="Texture2D" path="res://assets/ch1/Characters(100x100 split)/Skeleton/Skeleton/Skeleton_Idle.png" id="3_char_tex"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="4_settings_scene"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu_script")
+character_stats = ExtResource("2_stats")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.09, 0.12, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "💀 SURVIVOR SKELETON 💀"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="CharacterPanel" type="VBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="CharacterPreview" type="TextureRect" parent="CenterContainer/VBoxContainer/HBoxContainer/CharacterPanel"]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 2
+texture = ExtResource("3_char_tex")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="CharName" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/CharacterPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "스켈레톤 (Skeleton)"
+horizontal_alignment = 1
+
+[node name="StatsPanel" type="PanelContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/StatsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="StatsLabel" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/StatsPanel/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "스탯 불러오는 중..."
+
+[node name="ButtonsVBox" type="VBoxContainer" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 12
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonsVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "⚔ 챕터 1 시작 (Start Chapter)"
+
+[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonsVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "⚙ 게임 설정"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonsVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "종료"
+
+[node name="SettingsMenu" parent="." instance=ExtResource("4_settings_scene")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

@@ -1,0 +1,90 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/chapters/chapter_1.gd" id="1_chap_script"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/enemy.tscn" id="3_enemy_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="4_settings_scene"]
+
+[node name="Chapter1" type="Node2D"]
+script = ExtResource("1_chap_script")
+enemy_scene = ExtResource("3_enemy_scene")
+
+[node name="ColorRectBackground" type="ColorRect" parent="."]
+offset_left = -3000.0
+offset_top = -3000.0
+offset_right = 3000.0
+offset_bottom = 3000.0
+color = Color(0.12, 0.14, 0.18, 1)
+
+[node name="Player" parent="." instance=ExtResource("2_player_scene")]
+position = Vector2(640, 360)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position_smoothing_enabled = true
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 1.2
+autostart = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopMargin" type="MarginContainer" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/TopMargin"]
+layout_mode = 2
+
+[node name="HPProgressBar" type="ProgressBar" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 24)
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="Spacer" type="Control" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TimeLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "00:00"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SettingsBtn" type="Button" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+custom_minimum_size = Vector2(100, 32)
+layout_mode = 2
+text = "⚙ 설정"
+
+[node name="LobbyBtn" type="Button" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+custom_minimum_size = Vector2(100, 32)
+layout_mode = 2
+text = "🏠 로비"
+
+[node name="SettingsMenu" parent="CanvasLayer" instance=ExtResource("4_settings_scene")]
+unique_name_in_owner = true
+visible = false
+
+[connection signal="pressed" from="CanvasLayer/HUD/TopMargin/HBoxContainer/SettingsBtn" to="." method="_on_settings_btn_pressed"]
+[connection signal="pressed" from="CanvasLayer/HUD/TopMargin/HBoxContainer/LobbyBtn" to="." method="_on_lobby_btn_pressed"]
