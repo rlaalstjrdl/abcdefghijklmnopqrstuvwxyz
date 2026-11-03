@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1793084522
+::res://::1793687962
 asdsa.png::CompressedTexture2D::5539836569779629273::1793084514::1793084606::1::::<><><>0<>0<>39ecc8b803ca4140f936b737838d2026<>res://.godot/imported/asdsa.png-32c49e4629cb7b8f0c3f2008ddf84be6.ctex::
 coupons.cfg::TextFile::-1::1791875849::0::1::::<><><>0<>0<><>::
 ITEM_SPRITE_PLAN.md::TextFile::-1::1789453842::0::1::::<><><>0<>0<><>::
@@ -20617,8 +20617,8 @@ skeleton_stats.tres::Resource/CharacterStats::-1::1788852912::0::1::::<><><>0<>0
 soldier_stats.tres::Resource/CharacterStats::-1::1788852929::0::1::::<><><>0<>0<><>::res://resources/character_stats.gd<>res://assets/ch1/Characters(100x100 split)/Soldier/Soldier/Soldier_Idle.png
 ::res://scenes/::1793083576
 ::res://scenes/chapters/::1789457990
-chapter_1.gd::GDScript::6514376710627608726::1793083855::0::1::::<>Node2D<><>0<>0<><>::
-chapter_1.tscn::PackedScene::-1::1793083099::0::1::::<><><>0<>0<><>::res://scenes/chapters/chapter_1.gd<>res://scenes/chapters/infinite_background.tscn<>res://scenes/entities/player.tscn<>res://scenes/entities/slime_enemy.tscn<>res://scenes/entities/bat_enemy.tscn<>res://scenes/entities/lancer_enemy.tscn<>res://scenes/entities/necromancer_boss.tscn<>res://scenes/items/drop_item.tscn<>res://scenes/ui/settings_menu.tscn<>res://scenes/ui/skill_chest_menu.tscn<>res://scenes/ui/level_up_menu.tscn
+chapter_1.gd::GDScript::6514376710627608726::1793085949::0::1::::<>Node2D<><>0<>0<><>::
+chapter_1.tscn::PackedScene::-1::1793085982::0::1::::<><><>0<>0<><>::res://scenes/chapters/chapter_1.gd<>res://scenes/chapters/infinite_background.tscn<>res://scenes/entities/player.tscn<>res://scenes/entities/slime_enemy.tscn<>res://scenes/entities/bat_enemy.tscn<>res://scenes/entities/lancer_enemy.tscn<>res://scenes/entities/necromancer_boss.tscn<>res://scenes/items/drop_item.tscn<>res://scenes/ui/settings_menu.tscn<>res://scenes/ui/skill_chest_menu.tscn<>res://scenes/ui/level_up_menu.tscn
 infinite_background.gd::GDScript::8603645108383144738::1789456590::0::1::::InfiniteBackground<>Node2D<><>0<>0<><>::
 infinite_background.tscn::PackedScene::-1::1788852949::0::1::::<><><>0<>0<><>::
 ::res://scenes/effects/::1793083819
@@ -20655,14 +20655,14 @@ molotov_fire.tscn::PackedScene::-1::1788852529::0::1::::<><><>0<>0<><>::res://sc
 skill_manager.gd::GDScript::253966119908127986::1789455452::0::1::::SkillManager<>Node<><>0<>0<><>::
 soccer_ball.gd::GDScript::5537520505877440863::1788852535::0::1::::SoccerBall<>Area2D<><>0<>0<><>::
 soccer_ball.tscn::PackedScene::-1::1788852539::0::1::::<><><>0<>0<><>::res://scenes/skills/soccer_ball.gd
-::res://scenes/ui/::1792482587
+::res://scenes/ui/::1793086017
 buff_display_hud.gd::GDScript::2459710341687672059::1792482481::0::1::::BuffDisplayHUD<>HBoxContainer<><>0<>0<><>::
 commando_menu.gd::GDScript::2245288925101346550::1791875712::0::1::::<>PanelContainer<><>0<>0<><>::
 commando_menu.tscn::PackedScene::-1::1789457848::0::1::::<><><>0<>0<><>::res://scenes/ui/commando_menu.gd
 level_up_menu.gd::GDScript::2991372318969245185::1788853037::0::1::::<>PanelContainer<><>0<>0<><>::
 level_up_menu.tscn::PackedScene::-1::1788852565::0::1::::<><><>0<>0<><>::
-main_menu.gd::GDScript::1558826213152695563::1791875706::0::1::::<>Control<><>0<>0<><>::
-main_menu.tscn::PackedScene::-1::1793083090::0::1::::<><><>0<>0<><>::res://scenes/ui/main_menu.gd<>res://resources/skeleton_stats.tres<>res://assets/ch1/Characters(100x100 split)/Skeleton/Skeleton/Skeleton_Idle.png<>res://scenes/ui/settings_menu.tscn<>res://scenes/ui/commando_menu.tscn
+main_menu.gd::GDScript::1558826213152695563::1793085895::0::1::::<>Control<><>0<>0<><>::
+main_menu.tscn::PackedScene::-1::1793085925::0::1::::<><><>0<>0<><>::res://scenes/ui/main_menu.gd<>res://resources/skeleton_stats.tres<>res://assets/ch1/Characters(100x100 split)/Skeleton/Skeleton/Skeleton_Idle.png<>res://scenes/ui/settings_menu.tscn<>res://scenes/ui/commando_menu.tscn
 settings_menu.gd::GDScript::5678904449276974351::1789458210::0::1::::<>PanelContainer<><>0<>0<><>::
 settings_menu.tscn::PackedScene::-1::1789458200::0::1::::<><><>0<>0<><>::res://scenes/ui/settings_menu.gd
 skill_chest_menu.gd::GDScript::8789990942521326761::1788852168::0::1::::<>PanelContainer<><>0<>0<><>::
@@ -20674,4 +20674,4 @@ buff_instance.gd::GDScript::8257319178433758687::1792482336::0::1::::BuffInstanc
 buff_manager.gd::GDScript::7905145248715344791::1793083976::0::1::::BuffManager<>Node<><>0<>0<><>::
 ::res://scripts/globals/::1789454966
 object_pool.gd::GDScript::2585213818329507535::1793084154::0::1::::<>Node<><>0<>0<><>::
-settings_manager.gd::GDScript::7076838186208449172::1792479139::0::1::::<>Node<><>0<>0<><>::
+settings_manager.gd::GDScript::7076838186208449172::1793086011::0::1::::<>Node<><>0<>0<><>::
