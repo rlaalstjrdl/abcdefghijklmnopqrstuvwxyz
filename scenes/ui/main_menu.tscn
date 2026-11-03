@@ -24,6 +24,66 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.09, 0.12, 1)
 
+[node name="TopMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 24
+
+[node name="HeaderHBox" type="HBoxContainer" parent="TopMargin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="UserLevelLabel" type="Label" parent="TopMargin/HeaderHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🎖️ 유저 Lv. 1"
+
+[node name="Spacer" type="Control" parent="TopMargin/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CoinHBox" type="HBoxContainer" parent="TopMargin/HeaderHBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="CoinIcon" type="TextureRect" parent="TopMargin/HeaderHBox/CoinHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CoinLabel" type="Label" parent="TopMargin/HeaderHBox/CoinHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "0"
+
+[node name="ClearItemHBox" type="HBoxContainer" parent="TopMargin/HeaderHBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ClearItemIcon" type="TextureRect" parent="TopMargin/HeaderHBox/ClearItemHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ClearItemLabel" type="Label" parent="TopMargin/HeaderHBox/ClearItemHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "0개"
+
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -67,6 +127,18 @@ theme_override_font_sizes/font_size = 18
 text = "스켈레톤 (Skeleton)"
 horizontal_alignment = 1
 
+[node name="CharLevelStarLabel" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/CharacterPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "[ Lv. 1 / 150 ] 미승급"
+horizontal_alignment = 1
+
+[node name="StarContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer/CharacterPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
 [node name="StatsPanel" type="PanelContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
@@ -95,7 +167,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "⚔ 챕터 1 시작 (Start Chapter)"
+text = "⚔ 게임 시작 (PLAY)"
 
 [node name="CommandoButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonsVBox"]
 unique_name_in_owner = true

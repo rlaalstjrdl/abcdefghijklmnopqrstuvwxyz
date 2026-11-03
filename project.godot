@@ -16,12 +16,13 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Survivor Skeleton"
 run/main_scene="res://scenes/ui/main_menu.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://assets/ch1/Characters(100x100 split)/Skeleton/Skeleton/Skeleton_Idle.png"
 
 [autoload]
 
 SettingsManager="*res://scripts/globals/settings_manager.gd"
+ObjectPool="*res://scripts/globals/object_pool.gd"
 
 [display]
 
@@ -78,7 +79,13 @@ attack_manual={
 ]
 }
 
+[physics]
+
+2d/default_gravity=0.0
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.08, 0.08, 0.11, 1)

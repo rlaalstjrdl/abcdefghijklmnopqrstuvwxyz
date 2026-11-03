@@ -12,9 +12,10 @@ radius = 16.0
 height = 40.0
 
 [node name="NecromancerBoss" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 2
+collision_layer = 6
 collision_mask = 1
 script = ExtResource("1_necro_script")
+
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_necro_tex")

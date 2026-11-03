@@ -3,16 +3,16 @@
 [ext_resource type="Script" path="res://scenes/ui/commando_menu.gd" id="1_commando_ui"]
 
 [node name="CommandoMenu" type="PanelContainer"]
-custom_minimum_size = Vector2(700, 520)
+custom_minimum_size = Vector2(880, 580)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -350.0
-offset_top = -260.0
-offset_right = 350.0
-offset_bottom = 260.0
+offset_left = -440.0
+offset_top = -290.0
+offset_right = 440.0
+offset_bottom = 290.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_commando_ui")
@@ -26,22 +26,59 @@ theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 
 [node name="HeaderHBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="MarginContainer/VBoxContainer/HeaderHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 22
 text = "🎖️ 특공대 (Commandos) 본부"
 
-[node name="CoinLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderHBox"]
+[node name="UserLevelLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderHBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "🪙 보유 코인: 1,500,000"
+theme_override_font_sizes/font_size = 16
+text = "🎖️ 유저 Lv. 1"
+
+[node name="CoinHBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HeaderHBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="CoinIcon" type="TextureRect" parent="MarginContainer/VBoxContainer/HeaderHBox/CoinHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CoinLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderHBox/CoinHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "0"
+
+[node name="ClearItemHBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HeaderHBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="ClearItemIcon" type="TextureRect" parent="MarginContainer/VBoxContainer/HeaderHBox/ClearItemHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ClearItemLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderHBox/ClearItemHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "0개"
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -61,3 +98,4 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "닫기 / 뒤로 가기"
+

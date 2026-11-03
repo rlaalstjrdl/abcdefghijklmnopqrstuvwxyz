@@ -11,8 +11,9 @@ radius = 14.0
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 2
-collision_mask = 1
+collision_mask = 0
 script = ExtResource("1_enemy_script")
+
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_slime_tex")

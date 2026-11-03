@@ -3,29 +3,30 @@
 [ext_resource type="Script" path="res://scenes/ui/settings_menu.gd" id="1_settings_ui"]
 
 [node name="SettingsMenu" type="PanelContainer"]
+custom_minimum_size = Vector2(460, 390)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -150.0
-offset_right = 200.0
-offset_bottom = 150.0
+offset_left = -230.0
+offset_top = -195.0
+offset_right = 230.0
+offset_bottom = 195.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_settings_ui")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -61,12 +62,45 @@ text = "자동 공격 (Auto Attack):"
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CouponTitle" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "🎟️ 쿠폰 번호 등록 (Coupon Code)"
+
+[node name="CouponHBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CouponInput" type="LineEdit" parent="MarginContainer/VBoxContainer/CouponHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "쿠폰 코드를 입력하세요"
+clear_button_enabled = true
+
+[node name="CouponRedeemButton" type="Button" parent="MarginContainer/VBoxContainer/CouponHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "사용하기"
+
+[node name="CouponStatusLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = ""
+autowrap_mode = 2
+
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 36)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 text = "닫기 / 적용"
+

@@ -6,30 +6,37 @@ extends CharacterBody2D
 
 var current_hp: float = 100.0
 var attack_timer: float = 0.0
+var invulnerable_timer: float = 0.0
 var is_dead: bool = false
-var is_attacking: bool = false
-var pending_attack_dir: Vector2 = Vector2.RIGHT
-var has_spawned_projectile_in_attack: bool = false
+var is_attacking_anim: bool = false
+var skill_manager: Node = null
+var buff_manager: BuffManager = null
+
+# 디버프 시스템 (하위 호환 유지)
+var debuff_timer: float = 0.0
+var speed_multiplier: float = 1.0
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
-signal hp_changed(new_hp, max_hp)
+signal hp_changed(new_hp: float, max_hp: float)
 signal player_died
 
 func _ready() -> void:
-	# Load selected commando stats
 	stats = SettingsManager.get_selected_stats()
 	current_hp = stats.max_hp
 	hp_changed.emit(current_hp, stats.max_hp)
 	
-	# Increase size
+	buff_manager = BuffManager.new()
+	buff_manager.name = "BuffManager"
+	add_child(buff_manager)
+	
+	var sm_script = preload("res://scenes/skills/skill_manager.gd")
+	skill_manager = sm_script.new()
+	skill_manager.name = "SkillManager"
+	add_child(skill_manager)
+	
 	scale = Vector2(2.2, 2.2)
-	
 	_setup_character_animations(stats.character_id)
-	
-	if not animated_sprite.frame_changed.is_connected(_on_sprite_frame_changed):
-		animated_sprite.frame_changed.connect(_on_sprite_frame_changed)
-	
 	animated_sprite.play("idle")
 
 func _setup_character_animations(char_id: String) -> void:
@@ -48,8 +55,8 @@ func _setup_character_animations(char_id: String) -> void:
 	var frames = SpriteFrames.new()
 	_add_anim_frames(frames, "idle", idle_path, 6, 8.0, true)
 	_add_anim_frames(frames, "walk", walk_path, 8, 10.0, true)
-	_add_anim_frames(frames, "attack", attack_path, 6, 12.0, false)
-	_add_anim_frames(frames, "hurt", hurt_path, 4, 8.0, false)
+	_add_anim_frames(frames, "attack", attack_path, 6, 14.0, false)
+	_add_anim_frames(frames, "hurt", hurt_path, 4, 10.0, false)
 	_add_anim_frames(frames, "death", death_path, 4, 6.0, false)
 	
 	animated_sprite.sprite_frames = frames
@@ -76,30 +83,48 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 	
+	if invulnerable_timer > 0.0:
+		invulnerable_timer -= delta
+	
+	# 디버프 타이머 처리
+	if debuff_timer > 0.0:
+		debuff_timer -= delta
+		if debuff_timer <= 0.0:
+			speed_multiplier = 1.0
+			modulate = Color.WHITE
+	
 	# Movement
 	var move_vec = SettingsManager.get_movement_vector()
-	velocity = move_vec * stats.move_speed
+	var effective_speed = stats.move_speed * speed_multiplier
+	if buff_manager:
+		effective_speed *= buff_manager.get_speed_multiplier()
+	
+	velocity = move_vec * effective_speed
 	move_and_slide()
 	
-	# Update animation and facing
+	# Animation
 	_update_animation(move_vec)
 	
-	# Attack cooldown
+	# Attack Cooldown
 	attack_timer -= delta
-	if attack_timer <= 0.0 and not is_attacking:
+	var can_act = true
+	if buff_manager and (buff_manager.is_stunned or buff_manager.is_frozen or buff_manager.is_silenced):
+		can_act = false
+		
+	if attack_timer <= 0.0 and can_act:
 		if SettingsManager.auto_attack:
 			_check_auto_attack()
 		else:
 			_check_manual_attack()
 
 func _update_animation(move_vec: Vector2) -> void:
-	if is_attacking:
-		return
-	
 	if move_vec.x > 0:
 		animated_sprite.flip_h = false
 	elif move_vec.x < 0:
 		animated_sprite.flip_h = true
+	
+	if is_attacking_anim:
+		return
 	
 	if move_vec.length_squared() > 0.01:
 		if animated_sprite.animation != "walk":
@@ -112,7 +137,7 @@ func _check_auto_attack() -> void:
 	var closest_enemy = _find_closest_enemy()
 	if closest_enemy:
 		var dir = (closest_enemy.global_position - global_position).normalized()
-		_start_attack(dir)
+		_fire_attack(dir)
 
 func _check_manual_attack() -> void:
 	if Input.is_action_just_pressed("attack_manual") or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -120,7 +145,7 @@ func _check_manual_attack() -> void:
 		var dir = (mouse_pos - global_position).normalized()
 		if dir == Vector2.ZERO:
 			dir = Vector2.RIGHT if not animated_sprite.flip_h else Vector2.LEFT
-		_start_attack(dir)
+		_fire_attack(dir)
 
 func _find_closest_enemy() -> Node2D:
 	var enemies = get_tree().get_nodes_in_group("enemies")
@@ -128,7 +153,7 @@ func _find_closest_enemy() -> Node2D:
 	var min_dist: float = stats.attack_range
 	
 	for enemy in enemies:
-		if is_instance_valid(enemy) and not enemy.get("is_dead"):
+		if is_instance_valid(enemy) and enemy.visible and not enemy.get("is_dead"):
 			var dist = global_position.distance_to(enemy.global_position)
 			if dist <= min_dist:
 				min_dist = dist
@@ -136,60 +161,115 @@ func _find_closest_enemy() -> Node2D:
 	
 	return closest
 
-func _start_attack(direction: Vector2) -> void:
-	attack_timer = stats.attack_cooldown
-	is_attacking = true
-	pending_attack_dir = direction
-	has_spawned_projectile_in_attack = false
+
+func _fire_attack(direction: Vector2) -> void:
+	var cd = stats.attack_cooldown
+	if buff_manager:
+		cd *= buff_manager.get_cooldown_multiplier()
+	attack_timer = cd
 	
+	# Flip towards firing direction
 	if direction.x > 0:
 		animated_sprite.flip_h = false
 	elif direction.x < 0:
 		animated_sprite.flip_h = true
 	
-	animated_sprite.stop()
-	animated_sprite.play("attack")
-
-func _on_sprite_frame_changed() -> void:
-	if is_attacking and animated_sprite.animation == "attack":
-		# Attack motion strikes at frame 2
-		if animated_sprite.frame >= 2 and not has_spawned_projectile_in_attack:
-			_spawn_projectile()
-
-func _spawn_projectile() -> void:
-	has_spawned_projectile_in_attack = true
-	if projectile_scene:
-		var proj = projectile_scene.instantiate()
-		proj.global_position = global_position
-		proj.damage = stats.attack_power
-		proj.set_target_direction(pending_attack_dir)
-		get_parent().add_child(proj)
+	# If moving, keep walking animation but flash/slash effect; if standing still, play attack animation
+	if velocity.length_squared() < 0.01:
+		is_attacking_anim = true
+		animated_sprite.play("attack")
+	
+	# Calculate effective attack power
+	var atk_power = stats.attack_power
+	if buff_manager:
+		atk_power = (atk_power + buff_manager.get_attack_addition()) * buff_manager.get_attack_multiplier()
+		atk_power *= (1.0 + buff_manager.get_damage_amplify())
+		
+		# 실명(Blind) 확률 체크
+		if buff_manager.blind_chance > 0.0 and randf() < buff_manager.blind_chance:
+			return # 빗나감!
+	
+	# Spawn Projectile via ObjectPool
+	ObjectPool.spawn_projectile(global_position, direction, atk_power, get_parent())
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite.animation == "attack":
-		if not has_spawned_projectile_in_attack:
-			_spawn_projectile()
-		is_attacking = false
-		animated_sprite.play("idle")
-	elif animated_sprite.animation == "hurt":
-		is_attacking = false
+		is_attacking_anim = false
 		animated_sprite.play("idle")
 	elif animated_sprite.animation == "death":
 		queue_free()
 
 func take_damage(amount: float) -> void:
-	if is_dead:
+	if is_dead or invulnerable_timer > 0.0:
 		return
 	
-	var final_damage = max(1.0, amount - stats.defense)
+	# 회피(Dodge) 체크
+	if buff_manager and buff_manager.get_dodge_chance() > 0.0:
+		if randf() < buff_manager.get_dodge_chance():
+			return # 회피 성공
+	
+	invulnerable_timer = 0.25 # 무적 시간
+	
+	var effective_def = stats.defense
+	if buff_manager:
+		effective_def = (effective_def + buff_manager.get_defense_addition()) * buff_manager.get_defense_multiplier()
+		
+	var final_damage = max(1.0, amount - effective_def)
+	if buff_manager:
+		var red = buff_manager.get_damage_reduction()
+		var amp = buff_manager.get_damage_amplify()
+		final_damage = max(1.0, final_damage * (1.0 - red + amp))
+		
 	current_hp -= final_damage
 	hp_changed.emit(current_hp, stats.max_hp)
 	
+	# 피격 임팩트 이펙트
+	ObjectPool.spawn_impact_effect(global_position, "red", Vector2(1.8, 1.8))
+	
+	# Red flash without blocking movement/attack
+	modulate = Color(2.5, 0.4, 0.4)
+	var tween = create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.15)
+	
 	if current_hp <= 0:
 		_die()
-	else:
-		is_attacking = true
-		animated_sprite.play("hurt")
+
+func apply_debuff(speed_ratio: float, duration: float) -> void:
+	if is_dead:
+		return
+	speed_multiplier = speed_ratio
+	debuff_timer = duration
+	# 디버프(저주/둔화) 시 보라색으로 깜빡임 표시
+	modulate = Color(0.6, 0.2, 0.9, 1.0)
+
+func add_buff(buff_id: String, duration: float = -1.0, stacks: int = 1) -> void:
+	if buff_manager:
+		buff_manager.apply_buff(buff_id, duration, stacks)
+
+func remove_buff(buff_id: String) -> void:
+	if buff_manager:
+		buff_manager.remove_buff(buff_id)
+
+func heal_percent(pct: float) -> void:
+	if is_dead:
+		return
+	var heal_amount = stats.max_hp * pct
+	current_hp = min(stats.max_hp, current_hp + heal_amount)
+	hp_changed.emit(current_hp, stats.max_hp)
+	
+	# Green flash for heal
+	modulate = Color(0.4, 2.0, 0.4)
+	var tween = create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.25)
+
+func get_skill_options() -> Array[Dictionary]:
+	if skill_manager and skill_manager.has_method("get_available_upgrade_options"):
+		return skill_manager.get_available_upgrade_options()
+	return []
+
+func upgrade_skill(skill_id: String) -> void:
+	if skill_manager and skill_manager.has_method("upgrade_skill"):
+		skill_manager.upgrade_skill(skill_id)
 
 func _die() -> void:
 	is_dead = true

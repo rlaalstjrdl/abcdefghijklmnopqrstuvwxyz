@@ -1,34 +1,41 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scenes/chapters/chapter_1.gd" id="1_chap_script"]
-[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2_player_scene"]
-[ext_resource type="PackedScene" path="res://scenes/entities/slime_enemy.tscn" id="3_slime_scene"]
-[ext_resource type="PackedScene" path="res://scenes/entities/lancer_enemy.tscn" id="4_lancer_scene"]
-[ext_resource type="PackedScene" path="res://scenes/entities/necromancer_boss.tscn" id="5_necro_scene"]
-[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="6_settings_scene"]
+[ext_resource type="PackedScene" path="res://scenes/chapters/infinite_background.tscn" id="2_bg_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="3_player_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/slime_enemy.tscn" id="4_slime_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/bat_enemy.tscn" id="5_bat_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/lancer_enemy.tscn" id="6_lancer_scene"]
+[ext_resource type="PackedScene" path="res://scenes/entities/necromancer_boss.tscn" id="7_necro_scene"]
+[ext_resource type="PackedScene" path="res://scenes/items/drop_item.tscn" id="8_drop_item_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="9_settings_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/skill_chest_menu.tscn" id="10_chest_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/level_up_menu.tscn" id="11_levelup_scene"]
 
 [node name="Chapter1" type="Node2D"]
 script = ExtResource("1_chap_script")
-slime_scene = ExtResource("3_slime_scene")
-lancer_scene = ExtResource("4_lancer_scene")
-necromancer_scene = ExtResource("5_necro_scene")
+slime_scene = ExtResource("4_slime_scene")
+bat_scene = ExtResource("5_bat_scene")
+lancer_scene = ExtResource("6_lancer_scene")
+necromancer_scene = ExtResource("7_necro_scene")
+drop_item_scene = ExtResource("8_drop_item_scene")
 
-[node name="ColorRectBackground" type="ColorRect" parent="."]
-offset_left = -4000.0
-offset_top = -4000.0
-offset_right = 4000.0
-offset_bottom = 4000.0
-color = Color(0.1, 0.12, 0.15, 1)
+[node name="InfiniteBackground" parent="." instance=ExtResource("2_bg_scene")]
 
-[node name="Player" parent="." instance=ExtResource("2_player_scene")]
+[node name="Player" parent="." instance=ExtResource("3_player_scene")]
 position = Vector2(640, 360)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+process_callback = 0
 zoom = Vector2(1.2, 1.2)
-position_smoothing_enabled = true
+
 
 [node name="SlimeSpawnTimer" type="Timer" parent="."]
 wait_time = 1.3
+autostart = true
+
+[node name="BatSpawnTimer" type="Timer" parent="."]
+wait_time = 2.5
 autostart = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -42,14 +49,43 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="XPMargin" type="MarginContainer" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 16.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 10
+
+[node name="HBoxXP" type="HBoxContainer" parent="CanvasLayer/HUD/XPMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LevelLabel" type="Label" parent="CanvasLayer/HUD/XPMargin/HBoxXP"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Lv. 1"
+
+[node name="XPProgressBar" type="ProgressBar" parent="CanvasLayer/HUD/XPMargin/HBoxXP"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+show_percentage = false
+
 [node name="TopMargin" type="MarginContainer" parent="CanvasLayer/HUD"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 70.0
+offset_top = 18.0
+offset_bottom = 85.0
 grow_horizontal = 2
 theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 20
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/HUD/TopMargin"]
@@ -76,12 +112,52 @@ text = "HP: 100 / 100"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TimeLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+[node name="CenterVBox" type="VBoxContainer" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="TimeLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "00:00"
 horizontal_alignment = 1
+
+[node name="StatusHBox" type="HBoxContainer" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="KillCountLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox/StatusHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💀 처치: 0"
+horizontal_alignment = 1
+
+[node name="CoinHBox" type="HBoxContainer" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox/StatusHBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="CoinHUDIcon" type="TextureRect" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox/StatusHBox/CoinHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CoinHUDLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox/StatusHBox/CoinHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "0"
+
+[node name="UserLevelHUDLabel" type="Label" parent="CanvasLayer/HUD/TopMargin/HBoxContainer/CenterVBox/StatusHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🎖️ 유저 Lv. 1"
 
 [node name="Spacer2" type="Control" parent="CanvasLayer/HUD/TopMargin/HBoxContainer"]
 layout_mode = 2
@@ -97,6 +173,53 @@ custom_minimum_size = Vector2(100, 36)
 layout_mode = 2
 text = "🏠 로비"
 
+[node name="BossHUD" type="VBoxContainer" parent="CanvasLayer/HUD"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 80.0
+offset_right = 300.0
+offset_bottom = 125.0
+grow_horizontal = 2
+theme_override_constants/separation = 4
+
+[node name="BossNameLabel" type="Label" parent="CanvasLayer/HUD/BossHUD"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.25, 0.25, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "☠ 최종 보스: 네크로맨서 ☠"
+horizontal_alignment = 1
+
+[node name="BossHPProgressBar" type="ProgressBar" parent="CanvasLayer/HUD/BossHUD"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="BossHPLabel" type="Label" parent="CanvasLayer/HUD/BossHUD/BossHPProgressBar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 12
+text = "1000 / 1000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="AnnouncementLabel" type="Label" parent="CanvasLayer/HUD"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -105,16 +228,71 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
+offset_left = -350.0
 offset_top = -120.0
-offset_right = 300.0
+offset_right = 350.0
 offset_bottom = -70.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 
-[node name="SettingsMenu" parent="CanvasLayer" instance=ExtResource("6_settings_scene")]
+[node name="VictoryPanel" type="PanelContainer" parent="CanvasLayer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(460, 320)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -160.0
+offset_right = 230.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="CanvasLayer/VictoryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/VictoryPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="CanvasLayer/VictoryPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "🎉 작전 성공! 🎉"
+horizontal_alignment = 1
+
+[node name="VictoryRewardLabel" type="Label" parent="CanvasLayer/VictoryPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 15
+text = "보상 정보 불러오는 중..."
+
+[node name="VictoryLobbyButton" type="Button" parent="CanvasLayer/VictoryPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "🏠 로비로 복귀하기"
+
+[node name="LevelUpMenu" parent="CanvasLayer" instance=ExtResource("11_levelup_scene")]
+unique_name_in_owner = true
+visible = false
+
+[node name="SkillChestMenu" parent="CanvasLayer" instance=ExtResource("10_chest_scene")]
+unique_name_in_owner = true
+visible = false
+
+[node name="SettingsMenu" parent="CanvasLayer" instance=ExtResource("9_settings_scene")]
 unique_name_in_owner = true
 visible = false
 

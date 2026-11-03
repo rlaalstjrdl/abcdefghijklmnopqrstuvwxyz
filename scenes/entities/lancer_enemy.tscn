@@ -12,9 +12,10 @@ radius = 15.0
 height = 36.0
 
 [node name="LancerEnemy" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 2
+collision_layer = 6
 collision_mask = 1
 script = ExtResource("1_lancer_script")
+
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_lancer_tex")

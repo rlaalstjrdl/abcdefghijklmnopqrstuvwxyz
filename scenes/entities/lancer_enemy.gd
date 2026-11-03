@@ -64,6 +64,13 @@ func die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+	
+	var chapter = get_tree().current_scene
+	if chapter and chapter.has_method("on_enemy_killed"):
+		chapter.on_enemy_killed("lancer", global_position)
+	if chapter and chapter.has_method("spawn_boss_rewards"):
+		chapter.spawn_boss_rewards(global_position)
+	
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(queue_free)
